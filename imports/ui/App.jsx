@@ -7,29 +7,11 @@ import { Toolbar } from './NoteForm';
 import { LoginForm } from './LoginForm';
 
 
-
-/*
-__all__
-fix deleting view from note
-global settings (delete views)
-----
-export/backup (+ daily task)
-calendar gcal
-background job (+ heartbeat check)
-*/
-
-
-
 export const App = () => {
   const user = useTracker(() => Meteor.user());
   const logout = () => Meteor.logout();
   const [activeView, setActiveView] = useState(0);
   onViewSelect = (value) => {setActiveView(value)};
-
-  // ????
-  // const [hideCompleted, setHideCompleted] = useState(false);
-  // const hideCompletedFilter = { isChecked: { $ne: true } };
-  // const pendingOnlyFilter = { ...hideCompletedFilter, ...userFilter };
 
   // get notes, views
   const { notes, views, isLoading } = useTracker(() => {

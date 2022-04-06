@@ -12,9 +12,14 @@ export const NoteForm = ({views}) => {
   const onSubmitNote = useCallback((values) => {
     noteTitle = values['noteTitle'];
     delete values['noteTitle']; 
-    Meteor.call('notes.insert', noteTitle, '', values);
-    form.resetFields();
-    setIsModalVisible(false);
+    let noViews = Object.values(values).indexOf(true) == -1;
+    if (noViews) {
+      console.log("No views selected!")
+    } else {
+      Meteor.call('notes.insert', noteTitle, '', values);
+      form.resetFields();
+      setIsModalVisible(false);
+    }
   }, [form]);
 
   const closePopup = useCallback(() => {
@@ -33,8 +38,7 @@ export const NoteForm = ({views}) => {
         onOk={form.submit}
         onCancel={closePopup}
         footer={[
-          <Button key="submit" type="primary" 
-            onClick={form.submit}>
+          <Button key="submit" type="primary" onClick={form.submit}>
             Add Note
           </Button>
         ]}>

@@ -33,30 +33,21 @@ Meteor.methods({
       userId: this.userId,
     }
 
-    console.log(newNote);
     NotesCollection.insert(newNote);
   },
 
   'notes.remove'(noteId) {
-
-    console.log("llok for ")
-
     check(noteId, String);
-    console.log("go 1")
+
     if (!this.userId) {
       throw new Meteor.Error('Not authorized.');
     }
-    console.log("go 2")
-    
-    
-    const note = NotesCollection.findOne({ _id: noteId, userId: this.userId });
 
+    const note = NotesCollection.findOne({ _id: noteId, userId: this.userId });
 
     if (!note) {
       throw new Meteor.Error('Access denied.');
     }
-
-    console.log("go 3")
     
     NotesCollection.remove(noteId);
   },
@@ -157,7 +148,7 @@ Meteor.methods({
     check(box.y, Number);
     check(box.width, Number);
     check(box.height, Number);
-    console.log("GO!!")
+    
     if (!this.userId) {
       throw new Meteor.Error('Not authorized.');
     }
@@ -178,7 +169,9 @@ Meteor.methods({
   
   'notes.editViews'(noteId, tags) {
     check(noteId, String);
+    
     console.log("GO!!!")
+
     if (!this.userId) {
       throw new Meteor.Error('Not authorized.');
     }
@@ -196,8 +189,10 @@ Meteor.methods({
     for (const tag in tags) {
       if (!views[tag] && tags[tag]) {
         views[tag] = defaultBox;
+        console.log("SET ", note.title, tag, "default")
       } else if (views[tag] && !tags[tag]) {
         delete views[tag];
+        console.log("delete ", note.title, tag, "default")
       }
     }  
 

@@ -3,64 +3,9 @@ import { Rnd } from "react-rnd";
 import "antd/dist/antd.css";
 import { Input, Modal, Button, Form, Switch, Space } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
+import { noteStyle, titleStyle, titleStyleA, textStyle, textStyleA, settingsButtonStyle, settingsButtonStyleA } from './Style';
 const { TextArea } = Input;
 
-const noteStyle = {
-  border: "solid 1px #0000ff",
-  background: "#0000ff",
-  padding: "0px" ,
-  overflow: "hidden"
-};
-
-const titleStyle = {
-  width: "100%", 
-  background: "#0000ff", 
-  color: "#ffffff", 
-  border: "0", 
-  fontSize: "1.3em", 
-  padding: "4px", 
-  paddingLeft: "8px"
-}
-
-const titleStyleArchived = {
-  width: "100%", 
-  background: "#aaaaff", 
-  color: "#555555", 
-  border: "0", 
-  fontSize: "1.3em", 
-  padding: "4px", 
-  paddingLeft: "8px",
-  textDecoration: "line-through"
-}
-
-const textStyle = {
-  width: "100%", 
-  height: "100%", 
-  fontSize: "1.15em", 
-  backgroundColor: "#ffff00", 
-  padding: "8px", 
-  border: "0"
-}
-
-const textStyleArchived = {
-  width: "100%", 
-  height: "100%", 
-  fontSize: "1.15em", 
-  backgroundColor: "#ffffdd", 
-  color: "#777777",
-  padding: "8px", 
-  border: "0"
-}
-
-const settingsButtonStyle = {
-  backgroundColor: "#0000ff", 
-  border: "#0000ff"
-}
-
-const settingsButtonStyleArchived = {
-  backgroundColor: "#aaaaff", 
-  border: "#aaaaff"
-}
 
 const defaultBox = {
   x: 50,
@@ -143,14 +88,17 @@ export const Note = ({ note, view, allViews }) => {
         onDragStop={updatePosition}
         onResizeStop={updateSize}
       >
-        <TextArea
+        {/* <TextArea
           style={note.isChecked ? titleStyleArchived : titleStyle}
           rows={1}
           onChange={updateTitle}
           defaultValue={note.title}
-        />
+        /> */}
+        <div style={{fontSize: "1.3em", color: "#fff", padding: "4px", paddingLeft: "7px"}}>
+          {note.title}
+        </div>
         <div style={{position:"absolute", top:"0", right:"0" }}>
-          <Button type="primary" style={note.isChecked ? settingsButtonStyleArchived : settingsButtonStyle} onClick={showModal} icon={<SettingOutlined />} />
+          <Button type="primary" style={note.isChecked ? settingsButtonStyleA : settingsButtonStyle} onClick={showModal} icon={<SettingOutlined />} />
           <Modal
             title={note.title}
             visible={isModalVisible}
@@ -170,6 +118,12 @@ export const Note = ({ note, view, allViews }) => {
               </Button>
             ]}>
               <Form form={form} onFinish={(values) => onModifyViews(values)} requiredMark={'optional'}> 
+                <Input
+                  style={{marginBottom: "20px"}}
+                  rows={1}
+                  onChange={updateTitle}
+                  defaultValue={note.title}
+                /> 
                 <Space wrap={true}>
                   {allViews ? allViews.map(v => (
                     <Form.Item key={v.name} name={v.name} valuePropName="checked" initialValue={((note.views && note.views[v.name]) ? 1 : 0 )}>
@@ -182,7 +136,8 @@ export const Note = ({ note, view, allViews }) => {
           </Modal>
         </div>        
         <TextArea
-          style={note.isChecked ? textStyleArchived : textStyle}
+          style={note.isChecked ? textStyleA : textStyle}
+          spellCheck="false" 
           onChange={updateText}
           defaultValue={note.text}
         />     
