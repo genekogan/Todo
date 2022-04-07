@@ -49,6 +49,8 @@ Meteor.startup(() => {
 
   const user = Accounts.findUserByUsername(USERNAME);
 
+  console.log("found")
+  console.log(NotesCollection.find().count())
   /*
   if (NotesCollection.find().count() === 0) {
     note => insertNote('First Note', 'This is the beginning', user)

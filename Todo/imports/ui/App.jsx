@@ -28,7 +28,7 @@ export const App = () => {
       return { ...noDataAvailable, isLoading: true };
     }
     const userFilter = user ? { userId: user._id } : {};
-    const notes = NotesCollection.find(userFilter, {sort: { createdAt: -1 }}).fetch();    
+    const notes = NotesCollection.find({}, {}).fetch();    
     const views = ViewsCollection.find(userFilter, {sort: { createdAt: -1 }}).fetch();
     return { notes, views };
   });
@@ -40,7 +40,7 @@ export const App = () => {
           <div className="app-header">
             <Toolbar views={views} activeView={activeView} onViewSelect={onViewSelect} />
             {/* <div className="user" style={{float:"left"}} onClick={logout}>
-              {user ? user.username : "not logged in"} 🚪
+              {user ? user.name : "not logged in"} 🚪
             </div> */}
           </div>
         </div>
@@ -61,6 +61,7 @@ export const App = () => {
         ) : (
           <LoginForm />
         )}
+
       </div>
     </div>
   );
