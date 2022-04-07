@@ -5,36 +5,57 @@ import '/imports/api/notesMethods';
 import '/imports/api/notesPublications';
 const { exec } = require("child_process");
 
-
-const MS_BETWEEN_UPDATES = 1000 * 60 * 1;
+const dataDir = `../../../../../../data`
+const mongoPort = 62992
+const msPerExport = 1000 * 60 * 1; // 60 * 12;
 
 
 const runSystemCommand = async (command) => {
   return new Promise(resolve => {
-    exec(cmd, (error, stdout, stderr) => {
+    exec(command, (error, stdout, stderr) => {
       if (error) {
           console.log(`error: ${error.message}`);
-          return;
+          resolve(undefined);
       }
       if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
+        console.log(`stderr: ${stderr}`);
       }
       resolve(stdout);
     })
   });  
 }
 
+const runArchiveChecker = async () => {
+  cmdExport =  `mongoexport --forceTableScan --host localhost --port ${mongoPort} --db meteor --collection notes --out ${dataDir}/notes.json;`
+  cmdExport += `mongoexport --forceTableScan --host localhost --port ${mongoPort} --db meteor --collection views --out ${dataDir}/views.json;`
+  cmdLog = `cd ${dataDir}; git log -1 --format=%cd`
+  cmdCommit = `cd ${dataDir}; git add *json; git commit --allow-empty -m "${new Date()}"`
+  lastExportStr = await runSystemCommand(cmdLog);
+  if (lastExportStr) {
+    lastExport = new Date(lastExportStr);
+    msSinceLastExport = new Date() - lastExport;
+    if (msSinceLastExport > msPerExport) {
+      console.log(`Archived ${new Date()}`)
+      await runSystemCommand(cmdExport);
+      await runSystemCommand(cmdCommit);
+    }
+  } else {
+    console.log(`Initialized archive on ${new Date()}`)
+    await runSystemCommand(cmdExport);
+    await runSystemCommand(cmdCommit);
+  }
+}
 
-const insertNote = (noteTitle, noteText, user) =>
-  NotesCollection.insert({
-    title: noteTitle,
-    text: noteText,
-    views: {},
-    userId: user._id,
-    createdAt: new Date(),
-  });
-  
+
+const revertToDate = async () => {
+  // export current to notes_current.json (temp)
+  // git show f86d1619b06cc217f11b54b49d7eb5bdc070fe28:notes.json > notes_old.json (temp)
+  // disable saveLoop
+  // mongoimport notes_old.json
+  // make button to go back to normal
+
+}
+
 
 Meteor.startup(() => {
   const USERNAME = 'gene'     // process.env.REACT_APP_DASHBOARD_USERNAME;
@@ -46,71 +67,13 @@ Meteor.startup(() => {
       password: PASSWORD,
     });
   }
-
-  const user = Accounts.findUserByUsername(USERNAME);
-
-  console.log("found")
-  console.log(NotesCollection.find().count())
-  /*
-  if (NotesCollection.find().count() === 0) {
-    note => insertNote('First Note', 'This is the beginning', user)
-  }
-  */
-
-
-/*
-  const exportDB = async () => {
-    console.log('expor???t')
-    cmd = 'mongoexport --forceTableScan --host localhost --port 3006 --db meteor --collection notes --out ../../../../../private/test.json';
-    result = await runSystemCommand(cmd)
-    console.log("export ? ")
-    console.log(result);
-    console.log("------")
-    return result;
-  }
-
-  const commitToGit = async () => {
-    console.log("commit>?!")
-    cmd = 'cd ../../../../../private/; git add *json; git commit -m "'+new Date()+'"';
-    console.log(cmd)
-    result = await runSystemCommand(cmd);
-    console.log("RESUL:T", result)
-    return result;
-  }
-
-
-  const runExport = async () => {
-    console.log('try export')
-    cmd = 'cd ../../../../../private/; git log -1 --format=%cd'
-    lastExport = new Date(await runSystemCommand(cmd));
-    delta = new Date() - lastExport;
-    console.log(delta)
-    if (delta > MS_BETWEEN_UPDATES) {
-      console.log('yay111')
-      await exportDB();
-      console.log("now!!!")
-      await commitToGit();
-      console.log("go????")
-    }
-    
-  }
-
   
-
-  const runLoop = async () => {
-    console.log("run loop")
-    setTimeout(function() {
-      await runExport();
-      runLoop();
-    }, 5000);
+  const runArchiveLoop = async () => {
+    setTimeout(async () => {
+      await runArchiveChecker();
+      runArchiveLoop();
+    }, 6000);
   }
-
-  runLoop();
-*/
-
-
-
+  runArchiveLoop();
 
 });
-
-

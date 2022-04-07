@@ -1,5 +1,6 @@
 .DS_Store
 .meteor
 .env
-private/
+.tmp*
+data/
 node_modules/
