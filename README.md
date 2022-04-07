@@ -12,6 +12,19 @@ meteor add accounts-password
 meteor npm install --save bcrypt
 meteor remove insecure
 meteor remove autopublish
+```
+
+Initiailize data archive.
+
+```
+mkdir data
+cd data
+git init
+```
+
+Run application.
+
+```
 meteor run --port 62991 
 ```
 
